@@ -40,6 +40,9 @@
  */
 
 import { codePointLength } from './code-points';
+// Aliased because `encode`'s parameter of the same name would shadow it, and a parameter default
+// cannot refer to the parameter it initializes.
+import { buildOrderingKey as defaultOrderingKeyBuilder } from './entry-ordering';
 import { entryKey, timelinePartition } from './entry-repository-port';
 import type {
   DecodeError,
@@ -91,59 +94,27 @@ const NORMALIZABLE_INSTANT_PATTERN =
   /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,9}))?)?(Z|[+-]\d{2}:\d{2})$/;
 
 // ---------------------------------------------------------------------------------------------
-// The GSI1SK seam — TEMPORARY, owned by task 6.1
+// The GSI1SK seam
 // ---------------------------------------------------------------------------------------------
 
 /**
  * How the `GSI1SK` ordering key is produced. `encode` takes it as an injectable parameter so that
- * this module never owns the ordering rule: **Entry_Ordering** (`./entry-ordering`, task 6.1) is the
- * single home of `buildOrderingKey`, `invert`, and `compareEntries`.
+ * this module never owns the ordering rule: **Entry_Ordering** (`./entry-ordering`) is the single
+ * home of `buildOrderingKey`, `invert`, and `compareEntries`, and the agreement between the
+ * key-derived order and the comparator is asserted there rather than here.
  *
  * The builder is handed the *normalized* Entry, so the key is always built from the canonical
  * `sessionDate` and `createdAt` that are written to the item, never from the caller's spelling.
  *
  * A builder must be total over Entries that passed `encode`'s validation — `entryId` is a 26-
  * character ULID, `sessionDate` is 10 characters, `createdAt` is 24 — which is what lets `encode`
- * keep its own never-throws guarantee.
+ * keep its own never-throws guarantee. The default, `buildOrderingKey`, is total over every input.
+ *
+ * The parameter stays injectable because it is the seam the store fake and the ordering properties
+ * use to substitute a key builder without reaching into `encode`. `decode` deliberately does not
+ * read `GSI1SK`, so nothing on the read path depends on which builder wrote it.
  */
 export type OrderingKeyBuilder = (entry: Entry) => string;
-
-/**
- * TEMPORARY — task 6.1 replaces this.
- *
- * The design's ordering key is `<sessionDate>#<createdAt>#<invert(entryId)>`, all three components
- * fixed-length, with the identifier complemented over the Crockford alphabet so that a single
- * descending GSI1 scan yields ascending identifiers on the third level of the Req 7.2 order.
- *
- * It lives here only because task 5.1 landed before task 6.1 and `encode` has to write *something*
- * correct into `GSI1SK`. When `src/core/entry-ordering.ts` exists, task 6.1 must:
- *
- * 1. delete `CROCKFORD_ALPHABET`, `invertEntryId`, and this constant from this file, and
- * 2. make it `import { buildOrderingKey } from './entry-ordering'` and use that as the default
- *    parameter value of {@link encode}.
- *
- * If `buildOrderingKey` takes an `EntrySummary` it satisfies {@link OrderingKeyBuilder} as-is, since
- * an `Entry` carries every `EntrySummary` field; if it takes the three components separately, wrap
- * it in one arrow. Nothing else in this module moves, because `decode` deliberately does not read
- * `GSI1SK`.
- */
-const CROCKFORD_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
-
-/** TEMPORARY — see {@link TEMPORARY_ORDERING_KEY_BUILDER}. */
-function invertEntryId(entryId: string): string {
-  let inverted = '';
-  for (const character of entryId) {
-    const index = CROCKFORD_ALPHABET.indexOf(character);
-    // `entryId` passed `ULID_PATTERN`, so every character is in the alphabet and the complement
-    // index is in bounds. The fallback exists only because the index type is `string | undefined`.
-    inverted += CROCKFORD_ALPHABET[CROCKFORD_ALPHABET.length - 1 - index] ?? character;
-  }
-  return inverted;
-}
-
-/** TEMPORARY — see the note on {@link CROCKFORD_ALPHABET}. Task 6.1 deletes this. */
-const TEMPORARY_ORDERING_KEY_BUILDER: OrderingKeyBuilder = (entry) =>
-  `${entry.sessionDate}#${entry.createdAt}#${invertEntryId(entry.entryId)}`;
 
 // ---------------------------------------------------------------------------------------------
 // Calendar and instant primitives
@@ -303,12 +274,13 @@ function encodeFailure(attribute: string, kind: EncodeError['kind']): EncodeResu
  * behind a JSON boundary, and a guard is the difference between "returns an error" and "throws on
  * the request path".
  *
- * @param buildOrderingKey how to derive `GSI1SK`. See {@link OrderingKeyBuilder}; the default is
- * temporary and belongs to task 6.1.
+ * @param buildOrderingKey how to derive `GSI1SK`. See {@link OrderingKeyBuilder}. Defaults to
+ * Entry_Ordering's `buildOrderingKey`, which is the design's rule, so the parameter is optional and
+ * every existing call site gets the production key.
  */
 export function encode(
   entry: Entry,
-  buildOrderingKey: OrderingKeyBuilder = TEMPORARY_ORDERING_KEY_BUILDER,
+  buildOrderingKey: OrderingKeyBuilder = defaultOrderingKeyBuilder,
 ): EncodeResult {
   if (typeof entry !== 'object' || entry === null) {
     return encodeInvalid('entry');

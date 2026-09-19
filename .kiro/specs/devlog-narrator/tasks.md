@@ -82,7 +82,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
       driven by generated `arbModelOutcome` sequences
     - _Design: Property test conventions; Requirements: 8.5, 8.9_
 
-- [ ] 3. Commit_Log_Parser
+- [x] 3. Commit_Log_Parser
   - [x] 3.1 Implement `parseCommitLog` against the design grammar
     - `src/core/commit-log-parser.ts`: single line split retaining 1-based indices, then a
       line-oriented recursive-descent scan with an explicit cursor; errors returned as values, never
@@ -102,7 +102,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
   - [x] 3.4 Write the model-based property test for subject extraction
     - **Property 4: Subject extraction follows the body-line rule**
     - **Validates: Requirements 4.1, 4.3, 4.8, 4.9**
-  - [ ] 3.5 Write the parser unit tests for intent-carrying examples
+  - [x] 3.5 Write the parser unit tests for intent-carrying examples
     - One well-formed multi-commit `git log`, one merge commit, one entry with no body lines, one
       entry with three body lines, one malformed input asserting the reported line number
     - Keep thin: the properties carry coverage, these carry readability
@@ -142,7 +142,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - **Validates: Requirements 8.7**
 
 - [ ] 6. Entry_Ordering
-  - [ ] 6.1 Implement `buildOrderingKey`, `invert`, and `compareEntries`
+  - [x] 6.1 Implement `buildOrderingKey`, `invert`, and `compareEntries`
     - `src/core/entry-ordering.ts`: `GSI1SK = sessionDate#createdAt#invert(entryId)` with all three
       components fixed-length, and the Crockford base32 alphabet complement for the identifier so a
       descending scan yields ascending identifiers
@@ -154,7 +154,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - **Validates: Requirements 6.6, 7.1, 7.2**
 
 - [ ] 7. Markdown_Renderer
-  - [ ] 7.1 Configure the restricted `markdown-it` instance
+  - [x] 7.1 Configure the restricted `markdown-it` instance
     - `src/core/markdown-renderer.ts` with `html: false`, `linkify: false`, `typographer: false`,
       enabled rules narrowed to headings, `strong`/`em`, ordered and unordered lists, links, inline
       code, fenced code blocks, and block quotes

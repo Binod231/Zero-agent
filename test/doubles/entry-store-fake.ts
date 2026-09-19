@@ -13,6 +13,7 @@ import type {
   TimelineQuery,
 } from '../../src/core/entry-repository-port';
 import { MAX_ENTRY_ITEM_BYTES, entryKey, sessionKey } from '../../src/core/entry-repository-port';
+import { buildOrderingKey } from '../../src/core/entry-ordering';
 
 /**
  * The in-memory Entry_Store.
@@ -44,16 +45,14 @@ import { MAX_ENTRY_ITEM_BYTES, entryKey, sessionKey } from '../../src/core/entry
  * **What it deliberately does not do.** It stores domain Entries rather than marshalled
  * `DynamoItem`s. Encoding is the Entry_Serializer's contract and Properties 5 and 6 cover it; folding
  * it in here would make a store property fail for a serializer bug and vice versa. Consequently the
- * size accounting and the ordering key are injected: pass the real `encodedSizeBytes ∘ encode` and the
- * real `buildOrderingKey` once tasks 5.2 and 6.1 land, and the fake's accept/reject decision and scan
- * order are the production ones by construction. The defaults below exist so the fake is usable
- * before those tasks and are documented as approximations, not as second implementations.
+ * size accounting and the ordering key are injectable. The ordering key now *defaults* to
+ * Entry_Ordering's real `buildOrderingKey`, so the scan order is the production order by
+ * construction and no second ordering implementation exists anywhere in the repository. The size
+ * accounting still defaults to the approximation below; pass the real `encodedSizeBytes ∘ encode`
+ * once task 5.2 lands and the accept/reject decision becomes the production one too.
  */
 
 const UTF8 = new TextEncoder();
-
-/** Crockford base32, the ULID alphabet (design: *Ordering key and the total order of Req 7.2*). */
-const ULID_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 
 export interface EntryStoreFakeOptions {
   /**
@@ -63,7 +62,11 @@ export interface EntryStoreFakeOptions {
   measureEntryBytes?: (entry: Entry) => number;
   /** The ceiling itself, defaulting to `MAX_ENTRY_ITEM_BYTES`. Lower it to test the boundary cheaply. */
   maxItemBytes?: number;
-  /** The `GSI1SK` builder. Defaults to the design's formula; Properties 9 and 10 inject the real one. */
+  /**
+   * The `GSI1SK` builder. Defaults to Entry_Ordering's real `buildOrderingKey`, so the fake's scan
+   * order is the production order by construction. The seam stays open so a test can substitute a
+   * deliberately wrong key and check that a property actually catches it.
+   */
   orderingKeyOf?: (entry: Entry) => string;
 }
 
@@ -93,24 +96,6 @@ interface PendingFailure {
   operations: readonly RepositoryOperation[] | undefined;
   remaining: number;
   decodeError: DecodeError | undefined;
-}
-
-/**
- * The design's `invert`: maps the ULID alphabet onto itself in reverse so a descending scan over the
- * complement yields ascending identifiers. A character outside the alphabet is passed through
- * unchanged rather than throwing, which keeps the default total over any generated identifier.
- */
-function invertUlid(entryId: string): string {
-  let inverted = '';
-  for (const character of entryId) {
-    const index = ULID_ALPHABET.indexOf(character);
-    inverted += index === -1 ? character : (ULID_ALPHABET[31 - index] ?? character);
-  }
-  return inverted;
-}
-
-function defaultOrderingKeyOf(entry: Entry): string {
-  return `${entry.sessionDate}#${entry.createdAt}#${invertUlid(entry.entryId)}`;
 }
 
 /**
@@ -188,7 +173,7 @@ export class EntryStoreFake implements EntryRepository {
 
   constructor(options: EntryStoreFakeOptions = {}) {
     this.#measureEntryBytes = options.measureEntryBytes;
-    this.#orderingKeyOf = options.orderingKeyOf ?? defaultOrderingKeyOf;
+    this.#orderingKeyOf = options.orderingKeyOf ?? buildOrderingKey;
     this.#maxItemBytes = options.maxItemBytes ?? MAX_ENTRY_ITEM_BYTES;
   }
 
