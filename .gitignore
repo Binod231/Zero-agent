@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+
+# CDK
+cdk.out/
+*.js.map
+cdk.context.json
+
+# build output
+dist/
+build/
+*.tsbuildinfo
+
+# secrets and local config
+.env
+.env.*
+!.env.example
+*.pem
+credentials
+
+# test and coverage
+coverage/
+.vitest/
+
+# editor and OS
+.DS_Store
+*.swp
