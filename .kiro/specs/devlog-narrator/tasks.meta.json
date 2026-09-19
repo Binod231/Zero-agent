@@ -278,6 +278,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792069450
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789801107285
+      },
+      {
+        "executionId": "ccd2c2bb-f7ae-482c-a366-0de30437c65f",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789801798390
       }
     ],
     "5.4 Write the canonical-form property test": [
@@ -285,6 +295,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792069499
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789801108375
+      },
+      {
+        "executionId": "ccd2c2bb-f7ae-482c-a366-0de30437c65f",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789801799608
       }
     ],
     "6.1 Implement `buildOrderingKey`, `invert`, and `compareEntries`": [
@@ -360,6 +380,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792069737
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789801109336
+      },
+      {
+        "executionId": "ccd2c2bb-f7ae-482c-a366-0de30437c65f",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789801801501
       }
     ],
     "7.4 Write the property test for heading structure": [
@@ -367,6 +397,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792069785
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789801110267
+      },
+      {
+        "executionId": "ccd2c2bb-f7ae-482c-a366-0de30437c65f",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789801800525
       }
     ],
     "8. Checkpoint - pure core complete": [
@@ -398,6 +438,11 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792069931
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789801111513
       }
     ],
     "9.3 Write the property test for write idempotence and atomicity": [
@@ -1045,6 +1090,13 @@
         "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789799826775
+      }
+    ],
+    "5. Entry_Serializer": [
+      {
+        "executionId": "ccd2c2bb-f7ae-482c-a366-0de30437c65f",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789801799708
       }
     ]
   }

@@ -120,7 +120,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - **Property 1: Commit log round trip**
     - **Validates: Requirements 4.5, 4.6**
 
-- [ ] 5. Entry_Serializer
+- [x] 5. Entry_Serializer
   - [x] 5.1 Implement `encode` and `decode`
     - `src/core/entry-serializer.ts`: no optional attributes (`generationFailed` always a `BOOL`),
       one canonical form per value (24-character UTC instants, 10-character session date, closed
@@ -134,10 +134,10 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - `canonicalBytes` emits UTF-8 JSON with recursively sorted attribute names, which is the
       artifact the determinism property compares
     - _Design: Entry_Serializer; Requirements: 8.7, 8.8_
-  - [ ] 5.3 Write the round-trip property test for serialization
+  - [x] 5.3 Write the round-trip property test for serialization
     - **Property 5: Entry serialization round trip is total and Unicode-preserving**
     - **Validates: Requirements 8.2, 8.3, 8.4**
-  - [ ] 5.4 Write the canonical-form property test
+  - [x] 5.4 Write the canonical-form property test
     - **Property 6: Entry serialization is canonical and deterministic**
     - **Validates: Requirements 8.7**
 
@@ -167,10 +167,10 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - Accessible link naming: use link text when present and non-empty, otherwise render the href as
       the visible text
     - _Design: Public_Site / Markdown_Renderer; Requirements: 7.3, 7.7_
-  - [ ] 7.3 Write the property test for inert rendered markup
+  - [~] 7.3 Write the property test for inert rendered markup
     - **Property 12: Markdown rendering never emits active markup**
     - **Validates: Requirements 7.5**
-  - [ ] 7.4 Write the property test for heading structure
+  - [x] 7.4 Write the property test for heading structure
     - **Property 13: Rendered heading structure is single-rooted and sequential**
     - **Validates: Requirements 7.3, 7.7**
 
