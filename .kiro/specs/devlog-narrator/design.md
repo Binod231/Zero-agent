@@ -1103,12 +1103,12 @@ request and of the asynchronous generation that followed (Req 11.7).
 system — essentially, a formal statement about what the system should do. Properties serve as the
 bridge between human-readable specifications and machine-verifiable correctness guarantees.*
 
-Property-based testing applies well to this feature. Four components are pure, total functions over
-very large input spaces — the Commit_Log_Parser and Commit_Log_Printer, the Entry_Serializer, the
-Entry_Ordering module, and the Markdown_Renderer — and the requirements name round-trip, totality,
-determinism, idempotence, and total-ordering obligations for them explicitly. The request handlers are
-also testable as properties against an in-memory Entry_Store fake, which keeps a hundred iterations
-cheap.
+This feature is a strong fit for property-based testing. Four components are pure, total functions
+over very large input spaces — the Commit_Log_Parser and Commit_Log_Printer, the Entry_Serializer,
+the Entry_Ordering module, and the Markdown_Renderer — and the requirements name round-trip,
+totality, determinism, idempotence, and total-ordering obligations for them explicitly. The request
+handlers are also testable as properties against an in-memory Entry_Store fake, which keeps a
+hundred iterations cheap.
 
 **Library:** [`fast-check`](https://fast-check.dev/) with Vitest, pinned to an exact version. Every
 property test runs a minimum of 100 iterations (`fc.assert(..., { numRuns: 100 })`), records its seed
