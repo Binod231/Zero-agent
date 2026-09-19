@@ -221,7 +221,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
       (`{ error: { code, message, field?, correlationId } }`) with no other keys ever added
     - _Design: Devlog_API (Middleware pipeline), Error Handling; Requirements: 9.3, 9.6, 11.1,
       11.2, 11.7_
-  - [ ] 10.2 Implement the redacting logger wrapper
+  - [x] 10.2 Implement the redacting logger wrapper
     - `src/api/logger.ts` over Powertools `Logger`, accepting only an allow-listed field set with no
       method taking an arbitrary object; note text and commit log text have no representation, only
       `noteTextCharCount`, `commitLogCharCount`, and `commitRecordCount`

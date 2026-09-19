@@ -335,9 +335,15 @@ links, inline code, fenced code blocks, and block quotes. Every other construct 
 definition lists, raw HTML) renders as its literal source text, which is what Req 7.3's closing
 clause and Req 7.5 jointly demand. Two post-processing steps run on the token stream:
 
-- **Heading demotion.** Body heading levels are shifted down one (h1→h2 … h5→h6, h6→h6) so the page
-  has exactly one h1 — the Entry title — and heading levels remain sequential with no skipped level
-  (Req 7.7). Without this step a body beginning with `# Heading` would produce two h1 elements.
+- **Heading demotion by nesting depth.** Each body heading renders at its nesting depth below the
+  title: a stack holds the source levels of the heading's ancestors, and each heading pops
+  ancestors at the same or deeper level, pushes itself, and renders at `min(depth + 1, 6)`, the
+  `+ 1` being the title's h1. A fixed one-level shift is insufficient — a body whose only heading is
+  `### Deep` would render h1 then h4, skipping two levels. Depth-based rendering keeps every body
+  level at 2 or greater, so the title's h1 stays the only one, and raises the level by at most one
+  per heading, so no level is skipped (Req 7.7). For a body whose headings already run sequentially
+  from `#`, it reproduces the fixed shift exactly, h6→h6 collapse included, since HTML offers no
+  heading deeper than h6.
 - **Link naming.** Every rendered anchor is given an accessible name stating its destination: link
   text is used when present and non-empty, otherwise the href is used as the visible text (Req 7.7).
 
