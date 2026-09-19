@@ -1,0 +1,51 @@
+{
+  "name": "devlog-narrator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Single-Author build-in-public devlog: CDK infrastructure, Lambda handlers, and a pure TypeScript core",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "jiti scripts/build.ts",
+    "test": "vitest run --project unit --project property --project infra",
+    "test:unit": "vitest run --project unit",
+    "test:property": "vitest run --project property",
+    "test:infra": "vitest run --project infra",
+    "test:integration": "vitest run --project integration",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@aws-lambda-powertools/logger": "2.35.0",
+    "@aws-sdk/client-bedrock-runtime": "3.1136.0",
+    "@aws-sdk/client-cloudfront": "3.1136.0",
+    "@aws-sdk/client-cognito-identity-provider": "3.1136.0",
+    "@aws-sdk/client-dynamodb": "3.1136.0",
+    "@aws-sdk/lib-dynamodb": "3.1136.0",
+    "aws-cdk-lib": "2.270.0",
+    "aws-jwt-verify": "5.2.1",
+    "constructs": "10.8.1",
+    "markdown-it": "15.0.2",
+    "ulid": "3.0.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.4",
+    "aws-cdk": "2.1142.0",
+    "esbuild": "0.28.2",
+    "eslint": "10.11.0",
+    "eslint-config-prettier": "10.1.8",
+    "fast-check": "4.10.1",
+    "jiti": "2.7.0",
+    "prettier": "3.9.8",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.0",
+    "vitest": "4.1.11"
+  }
+}

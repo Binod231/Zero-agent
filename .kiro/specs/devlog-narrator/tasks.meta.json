@@ -1,0 +1,843 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Initialize the Node project and TypeScript configuration": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792068321
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792088500
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792763262
+      }
+    ],
+    "1.2 Configure the test runner and property-testing library": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792068522
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792774517
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789793740114
+      }
+    ],
+    "1.3 Create the repository layout and the deterministic esbuild bundler script": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792068589
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792775393
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789793740184
+      }
+    ],
+    "1.4 Create the CDK v2 app skeleton with one stack and deploy-time context": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792068684
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792776509
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789793740301
+      }
+    ],
+    "2.1 Define the shared core types module": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792068736
+      }
+    ],
+    "2.2 Build the shared fast-check generator module": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792068786
+      }
+    ],
+    "2.3 Build the test doubles": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792068882
+      }
+    ],
+    "3.1 Implement `parseCommitLog` against the design grammar": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792068933
+      }
+    ],
+    "3.2 Write the property test for parser totality and determinism": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792068982
+      }
+    ],
+    "3.3 Write the property test for line-ending and non-ASCII equivalence": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069033
+      }
+    ],
+    "3.4 Write the model-based property test for subject extraction": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069073
+      }
+    ],
+    "3.5 Write the parser unit tests for intent-carrying examples": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069141
+      }
+    ],
+    "4.1 Implement `printCommitLog`": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069232
+      }
+    ],
+    "4.2 Write the round-trip property test for the parser and printer pair": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069303
+      }
+    ],
+    "5.1 Implement `encode` and `decode`": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069356
+      }
+    ],
+    "5.2 Implement `encodedSizeBytes` and `canonicalBytes`": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069402
+      }
+    ],
+    "5.3 Write the round-trip property test for serialization": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069450
+      }
+    ],
+    "5.4 Write the canonical-form property test": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069499
+      }
+    ],
+    "6.1 Implement `buildOrderingKey`, `invert`, and `compareEntries`": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069540
+      }
+    ],
+    "6.2 Write the model-based property test for the total order": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069587
+      }
+    ],
+    "7.1 Configure the restricted `markdown-it` instance": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069636
+      }
+    ],
+    "7.2 Implement the two token-stream post-processing steps": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069690
+      }
+    ],
+    "7.3 Write the property test for inert rendered markup": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069737
+      }
+    ],
+    "7.4 Write the property test for heading structure": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069785
+      }
+    ],
+    "8. Checkpoint - pure core complete": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069835
+      }
+    ],
+    "9.1 Define the DynamoDB table in CDK": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069885
+      }
+    ],
+    "9.2 Implement the repository module over the single table": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069931
+      }
+    ],
+    "9.3 Write the property test for write idempotence and atomicity": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792069988
+      }
+    ],
+    "9.4 Write the property test for oversized-entry rejection": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070049
+      }
+    ],
+    "9.5 Write CDK template assertions for the Entry_Store": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070099
+      }
+    ],
+    "10.1 Implement the middleware pipeline in its fixed order": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070150
+      }
+    ],
+    "10.2 Implement the redacting logger wrapper": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070197
+      }
+    ],
+    "10.3 Implement the health route": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070240
+      }
+    ],
+    "10.4 Write the property test for error-response sanitization": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070287
+      }
+    ],
+    "10.5 Write the property test for log redaction": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070339
+      }
+    ],
+    "10.6 Write the property test for correlation identifiers": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070396
+      }
+    ],
+    "11.1 Define the API Gateway HTTP API and the `api` Lambda function": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070438
+      }
+    ],
+    "11.2 Define the S3 bucket and the CloudFront distribution": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070487
+      }
+    ],
+    "11.3 Wire the stack outputs and the deploy script": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070589
+      }
+    ],
+    "11.4 Write CDK template assertions for compute, edge, and tagging": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070636
+      }
+    ],
+    "11.5 Write the property test for synthesis determinism": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070690
+      }
+    ],
+    "11.6 Run the documented deploy command and verify the ship gate": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070737
+      }
+    ],
+    "12.1 Define the Cognito user pool, client, and single user in CDK": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070785
+      }
+    ],
+    "12.2 Set the Author's initial password out of band": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070832
+      }
+    ],
+    "12.3 Implement the token validation module": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070882
+      }
+    ],
+    "12.4 Implement the sign-in proxy with per-address lockout": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792070951
+      }
+    ],
+    "12.5 Implement sign-out and credential revocation": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071004
+      }
+    ],
+    "12.6 Write the property test for credential validation": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071063
+      }
+    ],
+    "12.7 Write CDK template assertions for the user pool": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071106
+      }
+    ],
+    "13.1 Implement the DynamoDB token bucket": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071156
+      }
+    ],
+    "13.2 Implement the Author submission quota counters": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071205
+      }
+    ],
+    "13.3 Wire limiting and origin control into the request paths": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071254
+      }
+    ],
+    "13.4 Write the property test for rate limiting": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071304
+      }
+    ],
+    "14.1 Implement the Session_Input validation module": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071369
+      }
+    ],
+    "14.2 Implement `POST /api/author/sessions`": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071417
+      }
+    ],
+    "14.3 Implement `GET /api/author/sessions/{id}`": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071470
+      }
+    ],
+    "14.4 Write the property test for note text validation": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071521
+      }
+    ],
+    "14.5 Write the property test for session date resolution": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071571
+      }
+    ],
+    "14.6 Write the property test for verbatim note retention": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071620
+      }
+    ],
+    "15.1 Define the `generator` Lambda in CDK": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071670
+      }
+    ],
+    "15.2 Implement the prompt builder": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071721
+      }
+    ],
+    "15.3 Implement the invocation budget state machine": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071788
+      }
+    ],
+    "15.4 Implement generator persistence and the fallback path": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071890
+      }
+    ],
+    "15.5 Write the property test for the generation budget": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071937
+      }
+    ],
+    "15.6 Write the property test for model-output containment": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792071987
+      }
+    ],
+    "16. Checkpoint - write path produces Drafts end to end": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072048
+      }
+    ],
+    "17.1 Implement the Author read routes": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072096
+      }
+    ],
+    "17.2 Implement `PATCH /api/author/entries/{id}`": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072140
+      }
+    ],
+    "17.3 Implement publish and unpublish": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072202
+      }
+    ],
+    "17.4 Implement draft deletion": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072250
+      }
+    ],
+    "17.5 Implement best-effort CloudFront invalidation": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072299
+      }
+    ],
+    "17.6 Write the model-based property test for status transitions": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072352
+      }
+    ],
+    "17.7 Write the property test for editing": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072406
+      }
+    ],
+    "18.1 Implement the `AuthorConsoleClient` module": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072453
+      }
+    ],
+    "18.2 Implement the five console screens": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072504
+      }
+    ],
+    "18.3 Bundle and serve the console": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072552
+      }
+    ],
+    "18.4 Write unit tests for the console client bounds": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072601
+      }
+    ],
+    "19.1 Define the `site-renderer` Lambda and its IAM": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072674
+      }
+    ],
+    "19.2 Implement `renderTimeline`": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072731
+      }
+    ],
+    "19.3 Implement `renderEntry` and the not-found page": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072773
+      }
+    ],
+    "19.4 Implement the degraded read path": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072820
+      }
+    ],
+    "19.5 Write the property test for pagination": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072870
+      }
+    ],
+    "19.6 Write the property test for draft opacity": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072920
+      }
+    ],
+    "20.1 Write the single public stylesheet": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792072971
+      }
+    ],
+    "20.2 Implement the contrast-ratio function and its unit test": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073022
+      }
+    ],
+    "20.3 Add the axe-core checks over rendered HTML": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073102
+      }
+    ],
+    "21.1 Implement the health probe Lambda and its schedule": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073183
+      }
+    ],
+    "21.2 Define the SNS topic and the three required alarms": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073231
+      }
+    ],
+    "21.4 Write CDK template assertions for observability and cost control": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073286
+      }
+    ],
+    "22. Checkpoint - full System deployed and functional": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073337
+      }
+    ],
+    "23.1 Round-trip publish and read": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073398
+      }
+    ],
+    "23.2 Unpublish propagation": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073447
+      }
+    ],
+    "23.3 Draft opacity over the wire": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073498
+      }
+    ],
+    "23.4 HTTP to HTTPS redirect": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073548
+      }
+    ],
+    "23.5 Health and version agreement": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073598
+      }
+    ],
+    "23.6 Empty state": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073652
+      }
+    ],
+    "23.7 Rate limit behaviour": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073704
+      }
+    ],
+    "23.8 Authentication lockout": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073765
+      }
+    ],
+    "23.9 Oversize request body": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073814
+      }
+    ],
+    "23.10 Encryption and recovery window": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073866
+      }
+    ],
+    "23.11 Deploy idempotence": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073920
+      }
+    ],
+    "23.12 Public URL stability": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792073981
+      }
+    ],
+    "23.13 Synth determinism from the shell": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792074033
+      }
+    ],
+    "24.1 Assemble the Agent_Proof_Artifact": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792074083
+      }
+    ],
+    "24.2 Write the repository lint script": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792074139
+      }
+    ],
+    "24.3 Author and render the architecture diagram": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792074191
+      }
+    ],
+    "24.4 Generate `THIRD-PARTY.md` and enforce the license allow-list": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792074247
+      }
+    ],
+    "24.5 Write the README operational content": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792074298
+      }
+    ],
+    "24.6 Write the Builder_Writeup": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792074405
+      }
+    ],
+    "24.7 Produce the self-documenting build record": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792074457
+      }
+    ],
+    "25.1 Automate the scriptable ship-gate checks": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792074516
+      }
+    ],
+    "25.2 Execute the full 21-row ship-gate checklist": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792074565
+      }
+    ],
+    "26. Final checkpoint - submission ready": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789792074618
+      }
+    ],
+    "1. Project scaffold and toolchain": [
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789793740344
+      }
+    ]
+  }
+}

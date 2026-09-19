@@ -1,0 +1,8 @@
+{
+  "app": "node --import jiti/register infra/bin/app.ts",
+  "output": "cdk.out",
+  "watch": {
+    "include": ["infra/**", "src/**", "scripts/**"],
+    "exclude": ["**/*.d.ts", "cdk.out/**", "node_modules/**", "test/**"]
+  }
+}

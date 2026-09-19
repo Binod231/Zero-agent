@@ -1,0 +1,11 @@
+# Spec documents are authored by hand and must not be reflowed.
+.kiro/
+
+node_modules/
+cdk.out/
+dist/
+build/
+coverage/
+package-lock.json
+docs/
+LICENSE
