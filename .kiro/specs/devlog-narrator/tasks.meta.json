@@ -74,6 +74,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792068736
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789793750481
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789794245312
       }
     ],
     "2.2 Build the shared fast-check generator module": [
@@ -81,6 +91,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792068786
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789794245990
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789796836236
       }
     ],
     "2.3 Build the test doubles": [
@@ -88,6 +108,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792068882
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789794248040
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789796837170
       }
     ],
     "3.1 Implement `parseCommitLog` against the design grammar": [
@@ -95,6 +125,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792068933
+      },
+      {
+        "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789794247539
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789796838262
       }
     ],
     "3.2 Write the property test for parser totality and determinism": [
@@ -837,6 +877,13 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789793740344
+      }
+    ],
+    "2. Core domain types and test harness": [
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789796837259
       }
     ]
   }
