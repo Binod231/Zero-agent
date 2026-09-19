@@ -142,6 +142,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792068982
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789796848575
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789797833239
       }
     ],
     "3.3 Write the property test for line-ending and non-ASCII equivalence": [
@@ -149,6 +159,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792069033
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789796849809
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789797833902
       }
     ],
     "3.4 Write the model-based property test for subject extraction": [
@@ -156,6 +176,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792069073
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789796850952
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789797834853
       }
     ],
     "3.5 Write the parser unit tests for intent-carrying examples": [
@@ -170,6 +200,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792069232
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789796852130
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789797836268
       }
     ],
     "4.2 Write the round-trip property test for the parser and printer pair": [
@@ -184,6 +224,16 @@
         "executionId": "39d4df06-278d-420c-b1c2-91ac6f09c969",
         "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
         "timestamp": 1789792069356
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789796852797
+      },
+      {
+        "executionId": "c64f74d5-5c7a-4401-b9fd-a56155f48bb9",
+        "chatSessionId": "sess_a0b43e89-db22-47cc-8337-a2a0266051ad",
+        "timestamp": 1789797836951
       }
     ],
     "5.2 Implement `encodedSizeBytes` and `canonicalBytes`": [

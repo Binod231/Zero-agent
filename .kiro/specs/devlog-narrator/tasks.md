@@ -93,13 +93,13 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - Empty or whitespace-only input yields an empty record list with no error; the 501st `commit`
       line yields `TOO_MANY_COMMITS` with that line number
     - _Design: Commit_Log_Parser; Requirements: 4.1, 4.2, 4.3, 4.4, 4.8, 4.9, 4.10_
-  - [ ] 3.2 Write the property test for parser totality and determinism
+  - [x] 3.2 Write the property test for parser totality and determinism
     - **Property 2: Commit log parsing is total and deterministic**
     - **Validates: Requirements 4.4, 4.10**
-  - [ ] 3.3 Write the property test for line-ending and non-ASCII equivalence
+  - [x] 3.3 Write the property test for line-ending and non-ASCII equivalence
     - **Property 3: Line endings and non-ASCII author names do not change the result**
     - **Validates: Requirements 4.2**
-  - [ ] 3.4 Write the model-based property test for subject extraction
+  - [x] 3.4 Write the model-based property test for subject extraction
     - **Property 4: Subject extraction follows the body-line rule**
     - **Validates: Requirements 4.1, 4.3, 4.8, 4.9**
   - [ ] 3.5 Write the parser unit tests for intent-carrying examples
@@ -109,7 +109,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - _Design: Testing Strategy (Layers); Requirements: 4.1, 4.3, 4.4, 4.9_
 
 - [ ] 4. Commit_Log_Printer
-  - [ ] 4.1 Implement `printCommitLog`
+  - [x] 4.1 Implement `printCommitLog`
     - `src/core/commit-log-printer.ts`: LF line endings only, fixed placeholder email, no `Merge`
       line ever emitted, one four-space-indented body line when the subject is non-empty
     - Implement the partiality rules: reject invalid hash, empty or CR/LF/`<`/`>`-bearing author
@@ -121,7 +121,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - **Validates: Requirements 4.5, 4.6**
 
 - [ ] 5. Entry_Serializer
-  - [ ] 5.1 Implement `encode` and `decode`
+  - [x] 5.1 Implement `encode` and `decode`
     - `src/core/entry-serializer.ts`: no optional attributes (`generationFailed` always a `BOOL`),
       one canonical form per value (24-character UTC instants, 10-character session date, closed
       status union, literal `schemaVersion: 1`), derived `PK`, `SK`, `GSI1PK`, `GSI1SK`
