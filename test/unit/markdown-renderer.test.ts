@@ -11,11 +11,12 @@ import { createRestrictedMarkdownIt, renderMarkdown } from '../../src/core/markd
  *    rather than assumed from the choice of preset.
  * 3. The Req 7.5 escaping obligation holds for the adversarial shapes that matter: `<script>`
  *    payloads, event-handler attributes, and `javascript:` hrefs including obfuscated spellings.
+ * 4. The two token-stream post-processing steps: heading demotion and accessible link naming, each
+ *    with the edge cases the design leaves to the implementation (Req 7.7).
  *
  * These are worked examples. The universal statements live in the property tests: Property 12
  * quantifies inert output over arbitrary bodies (task 7.3) and Property 13 quantifies heading
- * structure (task 7.4). Heading *demotion* is task 7.2 and is deliberately not asserted here — the
- * expectations below are the pre-demotion output of this module in isolation.
+ * structure over arbitrary heading sequences (task 7.4).
  */
 
 /** Renders `source` and strips the trailing newline `markdown-it` appends to block output. */
@@ -74,17 +75,26 @@ describe('enabled rule set', () => {
 
 describe('constructs Req 7.3 supports', () => {
   it('renders ATX headings at every level', () => {
-    expect(render('# One')).toBe('<h1>One</h1>');
+    // Heading demotion renders each body heading at its nesting depth below the Entry title's h1, so
+    // a lone heading opens at h2 whatever its source level, and a body whose headings run 1 through 6
+    // lands on h2 through h6. What is asserted here is that all six ATX levels are *recognized* as
+    // headings; the demotion rule itself is pinned in the heading-structure block below.
+    expect(render('# One')).toBe('<h2>One</h2>');
     expect(render('## Two')).toBe('<h2>Two</h2>');
-    expect(render('### Three')).toBe('<h3>Three</h3>');
-    expect(render('#### Four')).toBe('<h4>Four</h4>');
-    expect(render('##### Five')).toBe('<h5>Five</h5>');
-    expect(render('###### Six')).toBe('<h6>Six</h6>');
+    expect(render('### Three')).toBe('<h2>Three</h2>');
+    expect(render('#### Four')).toBe('<h2>Four</h2>');
+    expect(render('##### Five')).toBe('<h2>Five</h2>');
+    expect(render('###### Six')).toBe('<h2>Six</h2>');
+    expect(render('# One\n\n## Two\n\n### Three\n\n#### Four\n\n##### Five\n\n###### Six')).toBe(
+      '<h2>One</h2>\n<h3>Two</h3>\n<h4>Three</h4>\n<h5>Four</h5>\n<h6>Five</h6>\n<h6>Six</h6>',
+    );
   });
 
   it('renders setext headings', () => {
-    expect(render('Title\n=====')).toBe('<h1>Title</h1>');
+    expect(render('Title\n=====')).toBe('<h2>Title</h2>');
     expect(render('Title\n-----')).toBe('<h2>Title</h2>');
+    // The two underline styles stay one level apart when both appear.
+    expect(render('A\n=====\n\nB\n-----')).toBe('<h2>A</h2>\n<h3>B</h3>');
   });
 
   it('renders strong and em emphasis in both marker styles', () => {
@@ -284,6 +294,154 @@ describe('Req 7.5: no href can carry an executable URL', () => {
     expect(render('[x](//example.com/a)')).toBe('<p><a href="//example.com/a">x</a></p>');
     // A colon after a path separator is not a scheme separator.
     expect(render('[x](images/a:b.png)')).toBe('<p><a href="images/a:b.png">x</a></p>');
+  });
+});
+
+describe('Req 7.7: heading structure is single-rooted and sequential', () => {
+  /** The heading levels a rendered fragment carries, in document order. */
+  function headingLevels(html: string): number[] {
+    const levels: number[] = [];
+    for (const match of html.matchAll(/<h([1-6])>/g)) {
+      const [, level] = match;
+      if (level !== undefined) {
+        levels.push(Number(level));
+      }
+    }
+    return levels;
+  }
+
+  it('renders no h1, so the Entry title owns the only h1 on the page', () => {
+    for (const source of ['# a', '## a', '### a', '#### a', '##### a', '###### a', 'a\n===']) {
+      const html = renderMarkdown(source);
+      expect(html).not.toContain('<h1');
+      expect(headingLevels(html)).toStrictEqual([2]);
+    }
+  });
+
+  it('reproduces the design mapping on a body whose headings are already sequential', () => {
+    // h1→h2 … h5→h6 and h6→h6. The last step collapses two distinct source levels onto h6: past the
+    // sixth level HTML has nothing deeper, so that one level of visible hierarchy is lost.
+    const body = '# 1\n\n## 2\n\n### 3\n\n#### 4\n\n##### 5\n\n###### 6';
+    expect(headingLevels(renderMarkdown(body))).toStrictEqual([2, 3, 4, 5, 6, 6]);
+  });
+
+  it('skips no level when a body starts deep or jumps levels', () => {
+    // Fixed-mapping demotion would render these as [4], [2, 4], [4, 5] and [6, 2] — each a skip after
+    // the title's h1, or between consecutive body headings. Rendering at nesting depth avoids that.
+    const cases: [source: string, levels: number[]][] = [
+      ['### Deep', [2]],
+      ['###### Deepest', [2]],
+      ['# A\n\n### B\n\n###### C', [2, 3, 4]],
+      ['### a\n\n#### b', [2, 3]],
+      ['###### a\n\n# b', [2, 2]],
+      ['### a\n\n#### b\n\n## c\n\n# d', [2, 3, 2, 2]],
+    ];
+
+    for (const [source, expected] of cases) {
+      const levels = headingLevels(renderMarkdown(source));
+      expect(levels).toStrictEqual(expected);
+      // The title's h1 precedes the body, so the walk starts at 1: no increase exceeds one step.
+      let previous = 1;
+      for (const level of levels) {
+        expect(level).toBeLessThanOrEqual(previous + 1);
+        previous = level;
+      }
+    }
+  });
+
+  it('demotes headings nested in block quotes and list items', () => {
+    expect(render('> # q\n\n- ## li')).toBe(
+      '<blockquote>\n<h2>q</h2>\n</blockquote>\n<ul>\n<li>\n<h3>li</h3>\n</li>\n</ul>',
+    );
+  });
+
+  it('keeps the heading token markup consistent with the demoted tag', () => {
+    const tokens = createRestrictedMarkdownIt().parse('# a', {});
+    const headings = tokens.filter((token) => token.type.startsWith('heading_'));
+    expect(headings.map((token) => token.tag)).toStrictEqual(['h2', 'h2']);
+    expect(headings.map((token) => token.markup)).toStrictEqual(['##', '##']);
+  });
+
+  it('carries no heading state between renders', () => {
+    // The ancestor stack is per call; were it shared, a deep body would change how the next renders.
+    const lone = renderMarkdown('### Deep');
+    renderMarkdown('# 1\n\n## 2\n\n### 3\n\n#### 4\n\n##### 5\n\n###### 6');
+    expect(renderMarkdown('### Deep')).toBe(lone);
+    expect(renderMarkdown('### Deep')).toBe(lone);
+  });
+});
+
+describe('Req 7.7: every rendered anchor carries a name stating its destination', () => {
+  it('uses the link text when the label has text', () => {
+    expect(render('[text](https://example.com/a)')).toBe(
+      '<p><a href="https://example.com/a">text</a></p>',
+    );
+    expect(render('[**bold** text](https://example.com/a)')).toBe(
+      '<p><a href="https://example.com/a"><strong>bold</strong> text</a></p>',
+    );
+  });
+
+  it('uses the href when the label is absent, blank, or whitespace only', () => {
+    const named = '<p><a href="https://example.com/a">https://example.com/a</a></p>';
+    expect(render('[](https://example.com/a)')).toBe(named);
+    expect(render('[   ](https://example.com/a)')).toBe(named);
+    // A non-breaking space names nothing a Reader can perceive, so it counts as blank.
+    expect(render('[\u00a0](https://example.com/a)')).toBe(named);
+    expect(render('[\n](https://example.com/a)')).toBe(named);
+  });
+
+  it('replaces a label that renders markup carrying no text, wrapper included', () => {
+    // An inline code span holding a single space: text-only replacement would leave `<code></code>`.
+    const html = render('[` `](https://example.com/a)');
+    expect(html).toBe('<p><a href="https://example.com/a">https://example.com/a</a></p>');
+    expect(html).not.toContain('<code>');
+  });
+
+  it('names every anchor when a paragraph holds several links', () => {
+    expect(render('[a](https://e.com/1), [](https://e.com/2), [](https://e.com/3)')).toBe(
+      '<p><a href="https://e.com/1">a</a>, <a href="https://e.com/2">https://e.com/2</a>, ' +
+        '<a href="https://e.com/3">https://e.com/3</a></p>',
+    );
+  });
+
+  it('escapes an href used as visible text', () => {
+    expect(render('[](https://example.com/?a=1&b=2)')).toBe(
+      '<p><a href="https://example.com/?a=1&amp;b=2">https://example.com/?a=1&amp;b=2</a></p>',
+    );
+  });
+
+  it('names a link inside a heading and inside a list item', () => {
+    expect(render('## [](https://e.com/x)')).toBe(
+      '<h2><a href="https://e.com/x">https://e.com/x</a></h2>',
+    );
+    expect(render('- [](https://e.com/x)')).toBe(
+      '<ul>\n<li><a href="https://e.com/x">https://e.com/x</a></li>\n</ul>',
+    );
+  });
+
+  it('keeps an anchor whose href is empty when the label names it', () => {
+    expect(render('[home]()')).toBe('<p><a href="">home</a></p>');
+  });
+
+  it('drops the anchor when neither the label nor the href can name it', () => {
+    // No name and no destination: an unnamed anchor is an accessibility defect, and the href the
+    // design falls back to is empty, so nothing is left to render as a link.
+    for (const source of ['[]()', '[ ]()', '[](  )', '[` `]()']) {
+      const html = renderMarkdown(source);
+      expect(html).not.toContain('<a');
+      expect(html).not.toContain('href');
+    }
+    expect(render('[]()')).toBe('<p></p>');
+    // The label's own content survives; only the anchor around it goes.
+    expect(render('[ ]()')).toBe('<p> </p>');
+  });
+
+  it('renders the same output on repeated calls for bodies exercising both transforms', () => {
+    const body = '### Deep\n\n[](https://e.com/1)\n\n# Top\n\n[x](https://e.com/2)\n\n[]()';
+    const first = renderMarkdown(body);
+    renderMarkdown('# other\n\n[](https://e.com/3)');
+    expect(renderMarkdown(body)).toBe(first);
+    expect(renderMarkdown(body)).toBe(first);
   });
 });
 

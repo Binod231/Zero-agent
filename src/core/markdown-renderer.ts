@@ -168,15 +168,207 @@ function literalImageMarker(state: StateInline, silent: boolean): boolean {
  */
 type TokenStreamTransform = (tokens: Token[]) => void;
 
+/** The heading level of the Entry title, which owns the page's only h1 (Req 7.3). */
+const TITLE_HEADING_LEVEL = 1;
+
+/** The deepest heading level HTML offers; deeper nesting collapses onto it. */
+const MAX_HEADING_LEVEL = 6;
+
+/** Matches the `tag` of a `heading_open` or `heading_close` token and captures its level. */
+const HEADING_TAG_PATTERN = /^h([1-6])$/;
+
+/** Rewrites a heading token's tag, keeping `markup` consistent with it. */
+function setHeadingLevel(token: Token, level: number): void {
+  // Mutating token properties rather than the `tokens` parameter is how every `markdown-it` core
+  // rule works, and it keeps `no-param-reassign` satisfied.
+  token.tag = `h${level}`;
+  // After demotion `markup` no longer describes the source — the source said `#` for a token now
+  // tagged `h2` — so it is kept consistent with `tag` instead of with the source. ATX is the only
+  // spelling that covers all six levels, so setext headings acquire an ATX `markup` here. Nothing
+  // in the renderer reads `markup` for headings; this keeps the stream internally coherent for any
+  // future consumer that does.
+  token.markup = '#'.repeat(level);
+}
+
+/**
+ * Shifts body heading levels down so the page is single-rooted at the Entry title's h1 and the
+ * sequence of heading levels never skips a level (Req 7.3, 7.7; Property 13).
+ *
+ * **Plain demotion is not enough, and this is the substantive point.** The design states the step as
+ * a fixed mapping — h1→h2 … h5→h6, h6→h6 — which removes the second h1 but does *not* deliver Req
+ * 7.7's "skipping no level" clause. Two counterexamples, both ordinary Author input:
+ *
+ * - A body whose only heading is `### Deep` maps to h4. The page is then h1, h4: h2 and h3 skipped.
+ * - A body of `# A` then `### B` maps to h2, h4: h3 skipped.
+ *
+ * The fixed mapping is correct exactly when the body's own headings are already sequential from
+ * level 1, because then source level *is* nesting depth. So the rule implemented here is the one the
+ * mapping is a special case of: **render each heading at its nesting depth**, counted from the title.
+ *
+ * A stack holds the source levels of the current heading's ancestors. For each heading, ancestors at
+ * the same or a deeper level are popped — a heading closes every section at least as deep as itself —
+ * and the heading is pushed. Its rendered level is `depth + 1`, the `+ 1` being the title's h1,
+ * clamped to {@link MAX_HEADING_LEVEL}.
+ *
+ * Why that satisfies both clauses of Req 7.7:
+ *
+ * - Every rendered level is at least 2, so the body contributes no h1 and the title's is the only one.
+ * - Each heading pops zero or more entries and pushes exactly one, so depth grows by at most 1 from
+ *   one heading to the next, and so does the rendered level. Decreases are unconstrained, which is
+ *   what "skipping no level" permits — only *increases* can skip. Clamping can only lower a level, so
+ *   it cannot introduce a skip either.
+ *
+ * On a body whose headings run `# … ######` sequentially this reproduces the design's mapping exactly,
+ * including the h6→h6 collapse: two originally distinct source levels then render at the same level,
+ * losing that one level of visible hierarchy past the sixth. That is the design's instruction and HTML
+ * offers nothing deeper; the alternative, emitting `h7`, is not an HTML heading at all.
+ *
+ * The ancestor stack is local to the call, so nothing carries between renders.
+ */
+function demoteHeadings(tokens: Token[]): void {
+  /** Source levels of the ancestors of the heading being visited, outermost first. */
+  const ancestorSourceLevels: number[] = [];
+  /** The rendered level assigned to the open heading, so its `heading_close` can match it. */
+  let openHeadingLevel: number | undefined;
+
+  for (const token of tokens) {
+    if (token.type === 'heading_close') {
+      if (openHeadingLevel !== undefined) {
+        setHeadingLevel(token, openHeadingLevel);
+        openHeadingLevel = undefined;
+      }
+      continue;
+    }
+    if (token.type !== 'heading_open') {
+      continue;
+    }
+
+    const level = HEADING_TAG_PATTERN.exec(token.tag)?.[1];
+    if (level === undefined) {
+      // Not a heading level this module recognizes: leave the pair untouched rather than guess.
+      continue;
+    }
+    const sourceLevel = Number(level);
+
+    let deepestAncestor = ancestorSourceLevels.at(-1);
+    while (deepestAncestor !== undefined && deepestAncestor >= sourceLevel) {
+      ancestorSourceLevels.pop();
+      deepestAncestor = ancestorSourceLevels.at(-1);
+    }
+    ancestorSourceLevels.push(sourceLevel);
+
+    const renderedLevel = Math.min(
+      ancestorSourceLevels.length + TITLE_HEADING_LEVEL,
+      MAX_HEADING_LEVEL,
+    );
+    setHeadingLevel(token, renderedLevel);
+    openHeadingLevel = renderedLevel;
+  }
+}
+
+/**
+ * Builds the `text` token that carries an href as a link's visible name.
+ *
+ * `markdown-it` exports `Token` as a type only; the class is reachable as a static on the default
+ * export, which is the documented way to construct tokens outside a parser state.
+ */
+function createTextToken(content: string): Token {
+  const token = new MarkdownIt.Token('text', '', 0);
+  token.content = content;
+  return token;
+}
+
+/**
+ * The visible text a run of inline tokens contributes.
+ *
+ * Only self-closing tokens carry text: `text` holds its characters and `code_inline` holds its code.
+ * Tag-opening and tag-closing tokens (`em_open`, `strong_close`, …) have an empty `content`, so
+ * concatenating `content` across the run yields exactly the characters a Reader sees, with no
+ * per-type special casing to keep in step with the enabled rule set.
+ */
+function visibleText(tokens: Token[]): string {
+  let text = '';
+  for (const token of tokens) {
+    text += token.content;
+  }
+  return text;
+}
+
+/**
+ * Gives every rendered anchor an accessible name stating its destination (Req 7.7).
+ *
+ * The rule, from the design: use the link text when present and non-empty, otherwise use the href as
+ * the visible text. Three readings that the design leaves to the implementation:
+ *
+ * - **"Non-empty" means non-blank.** A label of `[   ]`, or of a single non-breaking space, names
+ *   nothing to a Reader or to a screen reader, so it is treated as absent. `String#trim` strips
+ *   Unicode `White_Space`, which is what makes the NBSP case fall out rather than need a special case.
+ * - **A label that renders to markup with no text counts as absent too.** `` [` `](url) `` produces a
+ *   `code` element holding one space. Because the whole label is replaced — not just its text tokens —
+ *   the empty wrapper goes with it, rather than leaving `<a><code></code></a>` behind.
+ * - **An empty href has no destination to state.** `[]()` would render `<a href=""></a>`: no name and
+ *   no destination, an anchor that cannot be described at all. The href is the only fallback the
+ *   design gives and it is empty, so the anchor is unwrapped and the label's content is rendered on
+ *   its own. That keeps the invariant worth having — *every* anchor this module emits has a non-blank
+ *   visible name — total, with no invented text. An empty href with a usable label keeps its anchor.
+ *
+ * The href used as the name is the attribute value, after `normalizeLink`, so the text a Reader sees
+ * is the destination the browser will follow, character for character. The renderer escapes it as it
+ * escapes any text token, so an `&` or `<` in a URL reaches the page as literal text (Req 7.5).
+ */
+function nameLinks(tokens: Token[]): void {
+  for (const token of tokens) {
+    if (token.type === 'inline' && token.children !== null) {
+      nameLinksInChildren(token.children);
+    }
+  }
+}
+
+function nameLinksInChildren(children: Token[]): void {
+  let index = 0;
+  while (index < children.length) {
+    const open = children[index];
+    if (open?.type !== 'link_open') {
+      index += 1;
+      continue;
+    }
+
+    const closeIndex = children.findIndex(
+      (token, candidate) => candidate > index && token.type === 'link_close',
+    );
+    if (closeIndex < 0) {
+      // Unbalanced stream: the `link` rule cannot produce one, and guessing is worse than leaving it.
+      break;
+    }
+
+    const label = children.slice(index + 1, closeIndex);
+    if (visibleText(label).trim() !== '') {
+      index = closeIndex + 1;
+      continue;
+    }
+
+    const href = open.attrGet('href');
+    const destination = typeof href === 'string' ? href : '';
+    if (destination.trim() === '') {
+      // No name and no destination: drop the anchor, keep whatever the label held.
+      children.splice(closeIndex, 1);
+      children.splice(index, 1);
+      index += label.length;
+      continue;
+    }
+
+    children.splice(index + 1, label.length, createTextToken(destination));
+    index += 3;
+  }
+}
+
 /**
  * The token-stream post-processing pipeline, run in order as the last core rule.
  *
- * Task 7.2 adds its two steps here — heading demotion (h1→h2 … h5→h6, h6→h6, so the page carries
- * exactly one h1, the Entry title, with no skipped level, Req 7.7) and accessible link naming — by
- * writing each as a `TokenStreamTransform` and appending it to this array. No other part of this
- * module changes.
+ * The two steps are independent: {@link demoteHeadings} touches only `heading_open` and
+ * `heading_close` tokens in the block stream, {@link nameLinks} only the children of `inline` tokens.
  */
-const TOKEN_STREAM_TRANSFORMS: readonly TokenStreamTransform[] = [];
+const TOKEN_STREAM_TRANSFORMS: readonly TokenStreamTransform[] = [demoteHeadings, nameLinks];
 
 function applyTokenStreamTransforms(state: StateCore): void {
   for (const transform of TOKEN_STREAM_TRANSFORMS) {

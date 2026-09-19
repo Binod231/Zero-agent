@@ -579,3 +579,238 @@ export function decode(item: DynamoItem): DecodeResult {
     },
   };
 }
+
+// ---------------------------------------------------------------------------------------------
+// UTF-8 primitives
+// ---------------------------------------------------------------------------------------------
+
+/**
+ * The number of bytes `text` occupies when encoded as UTF-8.
+ *
+ * Both `encodedSizeBytes` and the canonical encoding are defined in *bytes*, and JavaScript strings
+ * are UTF-16, so nothing in this module may use `String#length`. The count is computed from code
+ * points rather than by encoding into a buffer, so a 20000-code-point body costs no allocation on
+ * the request path.
+ *
+ * An unpaired surrogate is counted as 3 bytes, which is what `TextEncoder` produces for it: the
+ * encoder substitutes U+FFFD REPLACEMENT CHARACTER, itself 3 bytes. The count therefore agrees with
+ * {@link canonicalBytes} byte for byte on every string, well-formed or not.
+ */
+function utf8ByteLength(text: string): number {
+  let bytes = 0;
+  for (const codePoint of text) {
+    // `for…of` yields whole code points, so `codePointAt(0)` is the code point, not a high surrogate.
+    const value = codePoint.codePointAt(0) ?? 0;
+    if (value < 0x80) {
+      bytes += 1;
+    } else if (value < 0x800) {
+      bytes += 2;
+    } else if (value < 0x10000) {
+      bytes += 3;
+    } else {
+      bytes += 4;
+    }
+  }
+  return bytes;
+}
+
+// ---------------------------------------------------------------------------------------------
+// The canonical encoding (Req 8.7)
+// ---------------------------------------------------------------------------------------------
+
+/**
+ * Serializes any JSON-shaped value to canonical JSON text: object members emitted in ascending key
+ * order at *every* level of nesting, no insignificant whitespace, one spelling per value.
+ *
+ * **Why this is hand-written rather than `JSON.stringify` with a key-sorting replacer.** A replacer
+ * that rebuilds each object with its keys inserted in sorted order does not actually control the
+ * emitted order: JavaScript's own property order puts array-index-like keys (`"0"`, `"9"`, `"10"`)
+ * first and in *numeric* ascending order, whatever order they were inserted in. For keys `"9"` and
+ * `"10"` that disagrees with string order, so the bytes would depend on whether an attribute name
+ * happens to look like an integer. Emitting the members from an explicitly sorted array is the only
+ * way to make the order a property of this function rather than of the engine's object layout.
+ *
+ * **The sort is locale-independent by construction.** `Array#sort` with no comparator compares
+ * stringified elements with the abstract relational comparison, which is a UTF-16 code-unit
+ * comparison — the same result on every host, in every locale, under every `Intl` configuration.
+ * `localeCompare` is deliberately not used: it is locale-sensitive and would make the bytes depend
+ * on the runtime's collation. Code-unit order places astral-plane names (encoded as surrogates,
+ * U+D800–U+DFFF) below names in U+E000–U+FFFF, which is not code-point order; that is a harmless
+ * difference, since what the determinism obligation needs is one fixed order, not a specific one.
+ *
+ * **String escaping is spec-pinned.** `JSON.stringify` of a string is
+ * `QuoteJSONString`: `"` and `\` are escaped, C0 control characters take their short escape or
+ * `\uXXXX`, unpaired surrogates take `\uXXXX`, and every other code point is emitted literally. It
+ * is a total function on strings and fixed by the language, so an astral-plane character survives as
+ * itself and contributes its 4 UTF-8 bytes rather than an escape sequence.
+ *
+ * **Total on every input, including inputs `DynamoItem` does not describe.** This module sits behind
+ * a JSON boundary, so the fallbacks are reachable in principle and none of them throws:
+ * `undefined`, functions, and symbols become `null`; non-finite numbers become `null`, as in JSON;
+ * a `bigint`, which `JSON.stringify` throws on, becomes its decimal string; and a value that
+ * encloses itself becomes `null` at the point the cycle closes, detected against the chain of
+ * enclosing objects rather than a global visited set, so a value legitimately repeated in two
+ * sibling positions still serializes both times.
+ *
+ * A member whose value is `undefined` is emitted as `null` rather than dropped, unlike
+ * `JSON.stringify`. Dropping it would make an item carrying an explicit `undefined` attribute
+ * indistinguishable from one missing that attribute; keeping it makes the attribute *name set*
+ * visible in the bytes.
+ *
+ * @param ancestors the objects enclosing `value`, innermost last. Callers start with `[]`.
+ */
+function canonicalJson(value: unknown, ancestors: readonly object[]): string {
+  if (typeof value === 'string') {
+    return JSON.stringify(value);
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'true' : 'false';
+  }
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? JSON.stringify(value) : 'null';
+  }
+  if (typeof value === 'bigint') {
+    return JSON.stringify(value.toString());
+  }
+  if (typeof value !== 'object' || value === null) {
+    return 'null';
+  }
+  if (ancestors.includes(value)) {
+    return 'null';
+  }
+
+  const enclosing: readonly object[] = [...ancestors, value];
+
+  if (Array.isArray(value)) {
+    // Array order is data, not layout, so it is preserved rather than sorted.
+    const elements = (value as unknown[]).map((element) => canonicalJson(element, enclosing));
+    return `[${elements.join(',')}]`;
+  }
+
+  const record = value as Record<string, unknown>;
+  const members = Object.keys(record)
+    .sort()
+    .map((key) => `${JSON.stringify(key)}:${canonicalJson(record[key], enclosing)}`);
+  return `{${members.join(',')}}`;
+}
+
+/** One encoder for the module: `TextEncoder` is stateless and always emits UTF-8. */
+const UTF8 = new TextEncoder();
+
+/**
+ * The canonical byte sequence of a marshalled item — the artifact the determinism obligation of
+ * Req 8.7 is stated over.
+ *
+ * The requirement says two field-equal Entries must encode "identical byte for byte", but the
+ * DynamoDB wire form of an attribute map has no single normative byte sequence: attribute order is
+ * not part of the map's identity, and the client is free to serialize it however it likes. So this
+ * function *is* the definition of byte equality for this codebase: the item as UTF-8 JSON with
+ * attribute names sorted recursively and no insignificant whitespace.
+ *
+ * Two items with equal contents therefore produce equal bytes regardless of the order their
+ * attributes were assigned in, on every invocation and independently of invocation order — the
+ * function reads nothing but its argument and holds no state between calls. Combined with `encode`'s
+ * normalization, that is Req 8.7.
+ *
+ * Never throws, for any input. See {@link canonicalJson} for how out-of-contract shapes are handled.
+ * The result is a fresh `Uint8Array` on every call, so a caller may retain or mutate it freely.
+ */
+export function canonicalBytes(item: DynamoItem): Uint8Array {
+  return UTF8.encode(canonicalJson(item, []));
+}
+
+// ---------------------------------------------------------------------------------------------
+// Item size accounting (Req 8.8)
+// ---------------------------------------------------------------------------------------------
+
+/**
+ * The number of significant digits DynamoDB would count in an `N` value.
+ *
+ * DynamoDB normalizes numbers before storing them — leading and trailing zeroes are trimmed, and up
+ * to 38 significant digits are retained — so `100`, `1E2`, and `1.00E2` are the same stored number
+ * with one significant digit, and `0.00012` has two. The digits are taken from the mantissa only;
+ * the sign, the decimal point, and the exponent carry no significant digits.
+ *
+ * Zero, and any spelling of it, counts as one digit: a stored number is never zero bytes wide. A
+ * value that is not a number at all — which the `N` type cannot exclude, because a stored item is
+ * unverified JSON — also counts as one, so this stays total instead of returning `NaN` and poisoning
+ * the sum.
+ */
+function significantDigitCount(numeric: string): number {
+  const mantissa = numeric.split(/[eE]/)[0] ?? '';
+  const digits = mantissa.replace(/\D/g, '').replace(/^0+/, '').replace(/0+$/, '');
+  return digits.length === 0 ? 1 : digits.length;
+}
+
+/**
+ * The bytes DynamoDB attributes to one attribute *value*, excluding its name.
+ *
+ * The three cases are the three members of `DynamoAttributeValue`. The final fallback exists because
+ * a stored item arrives as JSON that nothing has verified: it sizes an unrecognized shape by the
+ * UTF-8 length of its canonical JSON text, which is *at least* what DynamoDB would charge for any
+ * scalar it could have been — a quoted string is longer than its raw bytes, `true` is 4 bytes
+ * against a boolean's 1 — so the estimate errs high and the Req 8.8 gate can only reject early,
+ * never admit an item the service would refuse.
+ */
+function attributeValueBytes(value: unknown): number {
+  if (typeof value === 'object' && value !== null) {
+    if ('S' in value && typeof value.S === 'string') {
+      return utf8ByteLength(value.S);
+    }
+    if ('N' in value && typeof value.N === 'string') {
+      return Math.ceil(significantDigitCount(value.N) / 2) + 1;
+    }
+    if ('BOOL' in value && typeof value.BOOL === 'boolean') {
+      return 1;
+    }
+  }
+  return utf8ByteLength(canonicalJson(value, []));
+}
+
+/**
+ * The size DynamoDB itself attributes to a marshalled item, in bytes.
+ *
+ * **The rule.** Per the DynamoDB Developer Guide, *Item sizes and formats*: an item's size is the
+ * sum of the lengths of its attribute names and values. Per attribute, with `name` counted as its
+ * UTF-8 byte length in every case:
+ *
+ * | Type | Value bytes |
+ * | --- | --- |
+ * | `S` | UTF-8 byte length of the string |
+ * | `N` | `ceil(significant digits / 2) + 1` |
+ * | `BOOL` | 1 |
+ *
+ * So the `schemaVersion` attribute of an Entry item — name `schemaVersion`, value `1` — is
+ * 13 + 1 + 1 = 15 bytes, and `generationFailed: false` is 16 + 1 = 17 bytes.
+ *
+ * **Where this is approximate.** The guide's own wording for numbers is *approximately*
+ * `(1 byte per two significant digits) + (1 byte)`; the exact internal encoding is unpublished. This
+ * module implements the documented formula literally, which is the only rule available to implement,
+ * and the imprecision is bounded by a byte or two per number. Every Entry item carries exactly one
+ * number, the literal `schemaVersion`, so for the items this System writes the error is at most a
+ * byte — nowhere near the 8 KiB of headroom the 384 KiB ceiling leaves under the service's 400 KB
+ * limit. Two things are deliberately *not* included: the 100 bytes of per-item storage overhead the
+ * guide describes, which is a storage-billing figure rather than part of the item-size limit, and
+ * list, map, set, and binary accounting, because no item shape in the design uses those types.
+ *
+ * **Where the 384 KiB decision lives.** Not here. This function is the primitive; the ceiling is
+ * `MAX_ENTRY_ITEM_BYTES` (393216) in `./entry-repository-port`, and the rejection is the
+ * repository's `putEntry`, which returns `ITEM_TOO_LARGE` *before* issuing any service call so that
+ * an oversized write never reaches the Entry_Store and the Devlog_API can name the storage size
+ * limit in a 400 (Req 8.8). Keeping the comparison out of this module is what lets `encodedSizeBytes`
+ * stay a pure measurement with no policy in it.
+ *
+ * Never throws, for any input, and never returns `NaN`: the sum is over `Object.keys`, and every
+ * per-attribute term is finite by construction.
+ */
+export function encodedSizeBytes(item: DynamoItem): number {
+  if (typeof item !== 'object' || item === null) {
+    return 0;
+  }
+
+  let total = 0;
+  for (const name of Object.keys(item)) {
+    total += utf8ByteLength(name) + attributeValueBytes(item[name]);
+  }
+  return total;
+}

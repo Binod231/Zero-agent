@@ -108,7 +108,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - Keep thin: the properties carry coverage, these carry readability
     - _Design: Testing Strategy (Layers); Requirements: 4.1, 4.3, 4.4, 4.9_
 
-- [ ] 4. Commit_Log_Printer
+- [x] 4. Commit_Log_Printer
   - [x] 4.1 Implement `printCommitLog`
     - `src/core/commit-log-printer.ts`: LF line endings only, fixed placeholder email, no `Merge`
       line ever emitted, one four-space-indented body line when the subject is non-empty
@@ -116,7 +116,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
       name, empty or CR/LF-bearing author date, CR/LF or whitespace-only non-empty subject, and
       lists over 500 records
     - _Design: Commit_Log_Printer; Requirements: 4.5_
-  - [ ] 4.2 Write the round-trip property test for the parser and printer pair
+  - [x] 4.2 Write the round-trip property test for the parser and printer pair
     - **Property 1: Commit log round trip**
     - **Validates: Requirements 4.5, 4.6**
 
@@ -128,7 +128,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - `decode` never throws and never returns a partially populated Entry; every anomaly is a
       `DecodeError` naming the attribute
     - _Design: Entry_Serializer, Entry_Serializer mapping; Requirements: 8.2, 8.3, 8.4_
-  - [ ] 5.2 Implement `encodedSizeBytes` and `canonicalBytes`
+  - [x] 5.2 Implement `encodedSizeBytes` and `canonicalBytes`
     - `encodedSizeBytes` implements DynamoDB's own accounting: summed UTF-8 byte lengths of
       attribute names and values
     - `canonicalBytes` emits UTF-8 JSON with recursively sorted attribute names, which is the
@@ -141,7 +141,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - **Property 6: Entry serialization is canonical and deterministic**
     - **Validates: Requirements 8.7**
 
-- [ ] 6. Entry_Ordering
+- [x] 6. Entry_Ordering
   - [x] 6.1 Implement `buildOrderingKey`, `invert`, and `compareEntries`
     - `src/core/entry-ordering.ts`: `GSI1SK = sessionDate#createdAt#invert(entryId)` with all three
       components fixed-length, and the Crockford base32 alphabet complement for the identifier so a
@@ -149,7 +149,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - `compareEntries` is the reference comparator: session date descending, creation timestamp
       descending, entry identifier ascending
     - _Design: Ordering key and the total order of Req 7.2; Requirements: 6.6, 7.1, 7.2_
-  - [ ] 6.2 Write the model-based property test for the total order
+  - [x] 6.2 Write the model-based property test for the total order
     - **Property 9: Entry ordering is a deterministic total order**
     - **Validates: Requirements 6.6, 7.1, 7.2**
 
@@ -161,7 +161,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - Every other construct (tables, footnotes, definition lists, raw HTML) renders as literal
       source text
     - _Design: Public_Site / Markdown_Renderer; Requirements: 7.3, 7.5_
-  - [ ] 7.2 Implement the two token-stream post-processing steps
+  - [x] 7.2 Implement the two token-stream post-processing steps
     - Heading demotion h1→h2 … h5→h6, h6→h6 so the page carries exactly one h1 (the Entry title)
       and heading levels stay sequential
     - Accessible link naming: use link text when present and non-empty, otherwise render the href as
@@ -178,7 +178,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 9. Entry_Store table and access layer
-  - [ ] 9.1 Define the DynamoDB table in CDK
+  - [x] 9.1 Define the DynamoDB table in CDK
     - `infra/lib/storage.ts`: single table, `PAY_PER_REQUEST`, SSE, point-in-time recovery,
       `ttl` attribute enabled, `removalPolicy: RETAIN`, GSI1 `status-order-index` with the narrow
       `INCLUDE` projection (`entryId`, `title`, `sessionDate`, `createdAt`, `updatedAt`,
