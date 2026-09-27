@@ -104,6 +104,9 @@ function optionsFor(target: BundleTarget, outDir: string): BuildOptions {
       ...shared,
       platform: 'node',
       target: ['node22'],
+      banner: {
+        js: "import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);",
+      },
       // Dependencies are bundled rather than taken from the runtime image, so an artifact's bytes
       // are fixed by this repository's pinned versions and not by the runtime's own SDK revision.
       external: [],
@@ -115,6 +118,8 @@ function optionsFor(target: BundleTarget, outDir: string): BuildOptions {
   return {
     ...shared,
     platform: 'browser',
+    format: 'iife',
+    globalName: 'DevlogConsole',
     target: ['es2022'],
     // esbuild's minifier is a pure function of input and version, so this stays deterministic.
     minify: true,

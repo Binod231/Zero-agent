@@ -1,6 +1,6 @@
 import { Duration, Stack } from 'aws-cdk-lib';
+import type { CfnStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import {
-  CfnStage,
   HttpApi,
   HttpMethod,
 } from 'aws-cdk-lib/aws-apigatewayv2';
@@ -53,6 +53,10 @@ export class Compute extends Construct {
     this.storage = props.storage;
     this.identity = props.identity;
 
+    // Concurrency reservation is optional to support AWS accounts with default 10 unreserved execution limits.
+    const enableReservedConcurrency =
+      this.node.tryGetContext('enableReservedConcurrency') === 'true';
+
     // 1. Generator Function (Amazon Bedrock invocation)
     const generatorLogGroup = new LogGroup(this, 'GeneratorLogGroup', {
       logGroupName: `/aws/lambda/devlog-narrator-${props.environment}-generator`,
@@ -67,7 +71,7 @@ export class Compute extends Construct {
       handler: 'index.handler',
       memorySize: 1024,
       timeout: Duration.seconds(75),
-      reservedConcurrentExecutions: 2,
+      ...(enableReservedConcurrency ? { reservedConcurrentExecutions: 2 } : {}),
       logGroup: generatorLogGroup,
       environment: {
         TABLE_NAME: props.storage.table.tableName,
@@ -106,7 +110,7 @@ export class Compute extends Construct {
       handler: 'index.handler',
       memorySize: 512,
       timeout: Duration.seconds(15),
-      reservedConcurrentExecutions: 20,
+      ...(enableReservedConcurrency ? { reservedConcurrentExecutions: 20 } : {}),
       logGroup: apiLogGroup,
       environment: {
         DEPLOYED_VERSION: props.versionId,
@@ -132,6 +136,15 @@ export class Compute extends Construct {
       ],
     });
 
+    // Cognito auth: InitiateAuth (sign-in) and GlobalSignOut (sign-out) only (Task 12.4, 12.5)
+    this.apiFunction.addToRolePolicy(
+      new PolicyStatement({
+        sid: 'AllowCognitoAuth',
+        actions: ['cognito-idp:InitiateAuth', 'cognito-idp:GlobalSignOut'],
+        resources: [props.identity.userPool.userPoolArn],
+      }),
+    );
+
     // 3. Public_Site Renderer Function
     const siteLogGroup = new LogGroup(this, 'SiteLogGroup', {
       logGroupName: `/aws/lambda/devlog-narrator-${props.environment}-site`,
@@ -146,7 +159,7 @@ export class Compute extends Construct {
       handler: 'index.handler',
       memorySize: 512,
       timeout: Duration.seconds(10),
-      reservedConcurrentExecutions: 20,
+      ...(enableReservedConcurrency ? { reservedConcurrentExecutions: 20 } : {}),
       logGroup: siteLogGroup,
       environment: {
         TABLE_NAME: props.storage.table.tableName,

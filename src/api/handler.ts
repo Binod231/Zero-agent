@@ -1,4 +1,5 @@
 import { ApiPipeline, type ApiRequest, type HttpResponse } from './pipeline';
+import { handleSignIn, handleSignOut } from './auth';
 
 export interface APIGatewayProxyEventV2 {
   version?: string;
@@ -41,6 +42,10 @@ pipeline.register('GET', '/api/health', (_req, _ctx): HttpResponse => {
     body: JSON.stringify({ version }),
   };
 });
+
+// Auth_Service routes (Task 12.4, 12.5)
+pipeline.register('POST', '/api/author/session', handleSignIn);
+pipeline.register('DELETE', '/api/author/session', handleSignOut);
 
 export { pipeline };
 

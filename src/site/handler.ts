@@ -165,7 +165,7 @@ function htmlShell(title: string, content: string): string {
       <nav class="nav-links">
         <a href="/">Timeline</a>
         <a href="/feed.xml">RSS Feed</a>
-        <a href="/console/">Author Console</a>
+        <a href="/console/index.html">Author Console</a>
       </nav>
     </header>
     <main>
@@ -370,6 +370,16 @@ export interface SiteGatewayEvent {
 
 export async function handler(event: SiteGatewayEvent): Promise<HttpResponse> {
   const path = event.rawPath ?? event.requestContext?.http?.path ?? '/';
+
+  if (path === '/console') {
+    return {
+      statusCode: 301,
+      headers: {
+        location: '/console/index.html',
+      },
+      body: '',
+    };
+  }
 
   if (path === '/feed.xml') {
     return renderFeed();
