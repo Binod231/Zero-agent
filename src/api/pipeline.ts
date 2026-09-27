@@ -126,9 +126,43 @@ export class ApiPipeline {
         }
       }
 
-      // Check route handler
+      // Check route handler — exact match first, then parameterized pattern fallback, then prefix
       const handlerKey = `${method} ${req.path}`;
-      const handler = this.routes.get(handlerKey);
+      let handler = this.routes.get(handlerKey);
+
+      if (!handler) {
+        const reqParts = req.path.split('/');
+        // 1. Try parameterized pattern matching
+        for (const [key, h] of this.routes.entries()) {
+          const [kMethod, kPattern] = key.split(' ');
+          if (kMethod !== method || !kPattern) continue;
+          const pParts = kPattern.split('/');
+          if (pParts.length === reqParts.length) {
+            const matches = pParts.every(
+              (p, idx) =>
+                p.startsWith(':') ||
+                (p.startsWith('{') && p.endsWith('}')) ||
+                p === reqParts[idx],
+            );
+            if (matches) {
+              handler = h;
+              break;
+            }
+          }
+        }
+
+        // 2. Try prefix matching fallback
+        if (!handler) {
+          for (const [key, h] of this.routes.entries()) {
+            const [kMethod, kPath] = key.split(' ');
+            if (kMethod !== method) continue;
+            if (kPath && !kPath.includes(':') && req.path.startsWith(kPath + '/')) {
+              handler = h;
+              break;
+            }
+          }
+        }
+      }
 
       if (!handler) {
         response = buildErrorResponse(

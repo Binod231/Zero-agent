@@ -1,5 +1,14 @@
 import { ApiPipeline, type ApiRequest, type HttpResponse } from './pipeline';
 import { handleSignIn, handleSignOut } from './auth';
+import { handleSubmitSession, handleGetSession } from './sessions';
+import {
+  handleListEntries,
+  handleGetEntry,
+  handlePatchEntry,
+  handlePublishEntry,
+  handleUnpublishEntry,
+  handleDeleteEntry,
+} from './entries';
 
 export interface APIGatewayProxyEventV2 {
   version?: string;
@@ -46,6 +55,19 @@ pipeline.register('GET', '/api/health', (_req, _ctx): HttpResponse => {
 // Auth_Service routes (Task 12.4, 12.5)
 pipeline.register('POST', '/api/author/session', handleSignIn);
 pipeline.register('DELETE', '/api/author/session', handleSignOut);
+
+// Session_Input routes (Task 14.2, 14.3)
+pipeline.register('POST', '/api/author/sessions', handleSubmitSession);
+pipeline.register('GET', '/api/author/sessions', handleGetSession);
+
+// Entry routes (Task 17.1, 17.2, 17.3, 17.4)
+pipeline.register('GET', '/api/author/entries', handleListEntries);
+pipeline.register('GET', '/api/author/entries/:id', handleGetEntry);
+pipeline.register('PATCH', '/api/author/entries/:id', handlePatchEntry);
+pipeline.register('PUT', '/api/author/entries/:id', handlePatchEntry);
+pipeline.register('POST', '/api/author/entries/:id/publish', handlePublishEntry);
+pipeline.register('POST', '/api/author/entries/:id/unpublish', handleUnpublishEntry);
+pipeline.register('DELETE', '/api/author/entries/:id', handleDeleteEntry);
 
 export { pipeline };
 
