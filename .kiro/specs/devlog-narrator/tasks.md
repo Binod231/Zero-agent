@@ -167,7 +167,7 @@ AWS-issued hostname), the decision stands and the tasks below implement it as wr
     - Accessible link naming: use link text when present and non-empty, otherwise render the href as
       the visible text
     - _Design: Public_Site / Markdown_Renderer; Requirements: 7.3, 7.7_
-  - [~] 7.3 Write the property test for inert rendered markup
+  - [ ] 7.3 Write the property test for inert rendered markup
     - **Property 12: Markdown rendering never emits active markup**
     - **Validates: Requirements 7.5**
   - [x] 7.4 Write the property test for heading structure

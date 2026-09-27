@@ -25,7 +25,7 @@
  *   npm run build -- --verify          build twice into separate directories and compare digests
  */
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -177,6 +177,12 @@ async function buildAll(outDir: string): Promise<TreeDigest> {
     }
     await build(optionsFor(target, outDir));
     console.log(`bundled ${target.name} -> ${outDir}/${target.outfile}`);
+  }
+
+  const consoleHtmlSrc = resolve(repoRoot, 'src/console/index.html');
+  if (await fileExists(consoleHtmlSrc)) {
+    await copyFile(consoleHtmlSrc, join(absOutDir, 'console/index.html'));
+    console.log(`copied console/index.html -> ${outDir}/console/index.html`);
   }
 
   return digestTree(absOutDir);

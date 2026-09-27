@@ -96,7 +96,7 @@ flowchart TB
 
     Cognito["Auth_Service<br/>Cognito user pool<br/>one admin-created user<br/>access token TTL 12 h"]
     DDB[("Entry_Store<br/>DynamoDB single table<br/>on-demand, PITR 35 d, SSE")]
-    Bedrock["Amazon Bedrock<br/>Claude 3.5 Haiku"]
+    Bedrock["Amazon Bedrock<br/>Amazon Nova Lite"]
     Probe["EventBridge rule<br/>5 min health probe"]
     SNS["SNS topic<br/>Author email"]
 
@@ -670,15 +670,29 @@ error". It rejects a record when:
 **Realized by:** Lambda function `generator` (Node.js 22, arm64, 1024 MB, 75 s timeout, reserved
 concurrency 2 per Req 10.4), invoked asynchronously by the Devlog_API.
 
-**Model:** Amazon Bedrock, `us.anthropic.claude-3-5-haiku-20241022-v1:0` — the cross-region inference
-profile for [Claude 3.5 Haiku](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-anthropic-claude-3-5-haiku.html),
+**Model:** Amazon Bedrock, `us.amazon.nova-lite-v1:0` — the US cross-region inference profile for
+[Amazon Nova Lite](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html),
 accessed through the Converse API. The model id is a CDK context value with this as its default, so
-switching models is a redeploy rather than a code change. Haiku over Sonnet for three reasons: the
-task is stylistic rewriting of material the Author already supplied, not reasoning; the per-token
-price is roughly an order of magnitude lower, which matters against a 20 USD ceiling; and the lower
-latency leaves more of the 60-second budget for retries. The cross-region profile is chosen over a
-single-region model id because it reduces throttling, which directly reduces how often the Req 5.4
-fallback fires. (Content rephrased from AWS documentation for licensing compliance.)
+switching models is a redeploy rather than a code change. Bedrock has **no free tier** for on-demand
+model inference — every model bills per token — so model choice is a cost decision rather than a
+free-or-not one, and per-token price is the whole of it. Nova Lite is among the cheapest capable
+models on Bedrock at approximately 0.06 USD per million input tokens and 0.24 USD per million output
+tokens ([Amazon Bedrock pricing](https://aws.amazon.com/bedrock/pricing/)), which against the 20 USD
+ceiling of Req 10.2 is the difference between generation being a rounding error and being the
+largest line on the bill. The task is stylistic rewriting of material the Author already supplied,
+not reasoning, so a small model is the right class, and Nova Lite's low output latency leaves more
+of the 60-second budget of Req 5.3 for retries. (Pricing rephrased from AWS documentation for
+licensing compliance.)
+
+**Nova Lite rather than Nova Micro,** which is cheaper still: the Entry_Generator's output contract
+is strict JSON with exactly two keys inside length bounds, and Req 5.7 spends an entire additional
+model invocation whenever that contract is broken. A broken contract therefore costs a whole second
+call, which is far more than the per-token delta between the two models on one call — better
+instruction-following at a marginally higher token price costs less in practice than the cheapest
+model retrying more often. Nova is also an Amazon first-party family, so enabling model access in
+the account is typically simpler than for a third-party model, which is worth something on a
+two-week clock. The cross-region profile is chosen over the single-region `amazon.nova-lite-v1:0` id
+because it reduces throttling, which directly reduces how often the Req 5.4 fallback fires.
 
 **Prompt structure (Req 5.6, 5.8).** The Converse request carries a `system` block holding the fixed
 instruction template and exactly one `user` message holding delimited data blocks:
@@ -706,6 +720,15 @@ user:
   </commit_subjects>
 ```
 
+This shape is valid for Nova through the Converse API, which normalizes request structure across
+providers: Amazon's Nova documentation lists system prompts among the supported Converse features
+and passes them as a `system` list of text blocks alongside `messages`, exactly as above, with
+`maxTokens` supplied under `inferenceConfig`. The one Nova-specific caveat is client configuration
+rather than request shape — Amazon's guidance is to raise the SDK read timeout for Nova inference
+calls, which is the opposite of what is wanted here, so the generator's Bedrock client keeps a short
+read timeout and lets a stalled call surface as an error inside the deadline of Req 5.3 rather than
+holding the Lambda open.
+
 Model input is exactly the fixed template, the note text, and the parsed Commit_Records — no other
 Entry, no retrieved content, nothing from the Entry_Store (Req 5.6). Inside the data blocks, `<` and
 `>` are replaced with `&lt;` and `&gt;`, so no injected payload can forge a closing delimiter or open
@@ -725,8 +748,14 @@ draft, which the Author reads before publishing.
 **Token budget (Req 10.6).** Bedrock is asked for at most 2000 output tokens via `maxTokens`. The
 4000-token input bound is enforced by construction on the character side, since token counts are not
 knowable before the call: the instruction template is a fixed ~350 tokens, leaving ~3650, and at a
-deliberately conservative 3.2 characters per token the data budget is 11680 characters. It is
-allocated as 9000 characters of note text and 2400 characters of commit subjects (at most 60
+deliberately conservative 3.2 characters per token the data budget is 11680 characters. That 3.2
+figure is kept unchanged across the switch to Nova Lite, and deliberately so: it was never derived
+from a particular model's tokenizer, Amazon does not publish Nova's, and published ratios for English
+prose across current tokenizers sit near 4 characters per token, so 3.2 assumes roughly a quarter
+more tokens per character than English prose produces and leaves margin for mixed-script input. The
+bound is also self-imposed rather than a platform limit — Nova Lite's context window is far larger
+than 4000 tokens — so an estimate that undershoots costs a little spend, never a failed call. The
+budget is allocated as 9000 characters of note text and 2400 characters of commit subjects (at most 60
 subjects), leaving margin for the delimiters and the escaping expansion. Note text longer than 9000
 characters is truncated at a code-point boundary with a trailing
 `\n[note truncated for generation; full text retained]` marker. The full note text is still retained

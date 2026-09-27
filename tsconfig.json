@@ -2,7 +2,7 @@
   "compilerOptions": {
     /* Language and environment: Lambda runtime is Node.js 22 (arm64). */
     "target": "es2023",
-    "lib": ["es2023"],
+    "lib": ["es2023", "dom"],
     "types": ["node"],
 
     /* Modules: ESM source, bundled by esbuild, so resolution is bundler-style. */

@@ -1,4 +1,4 @@
-import { Stack } from 'aws-cdk-lib';
+import { CfnOutput, Stack } from 'aws-cdk-lib';
 import type { StackProps } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import { Compute } from './compute';
@@ -15,14 +15,6 @@ export interface DevlogStackProps extends StackProps {
 
 /**
  * The single stack of the Infrastructure_Stack (Req 12.1).
- *
- * One stack keeps the deploy a single transaction with a single rollback boundary (Req 12.6) and
- * keeps the Public_URL stable across redeploys (Req 1.7). Resources are grouped into five construct
- * modules so that each later task edits its own file: storage (task 9.1), identity (task 12.1),
- * compute (tasks 11.1 and 21.1), edge (task 11.2), and observability (task 21.2).
- *
- * Construction order follows the dependency direction: storage and identity have no dependencies,
- * compute reads both, edge fronts compute, and observability watches compute.
  */
 export class DevlogStack extends Stack {
   public readonly storage: Storage;
@@ -54,6 +46,37 @@ export class DevlogStack extends Stack {
       environment,
       authorEmail,
       compute: this.compute,
+    });
+
+    // Outputs required by the hackathon ship gate and author workflow
+    new CfnOutput(this, 'PublicUrl', {
+      value: `https://${this.edge.distribution.distributionDomainName}`,
+      description: 'The Public URL reachable by judges and readers (Ship Gate)',
+    });
+
+    new CfnOutput(this, 'HealthUrl', {
+      value: `https://${this.edge.distribution.distributionDomainName}/api/health`,
+      description: 'The Public Health Route URL reporting deployed version',
+    });
+
+    new CfnOutput(this, 'ConsoleUrl', {
+      value: `https://${this.edge.distribution.distributionDomainName}/console/index.html`,
+      description: 'Author Console URL for writing and managing devlog entries',
+    });
+
+    new CfnOutput(this, 'DeployedVersion', {
+      value: versionId,
+      description: 'Git short SHA of the deployed build',
+    });
+
+    new CfnOutput(this, 'UserPoolId', {
+      value: this.identity.userPool.userPoolId,
+      description: 'Cognito User Pool ID',
+    });
+
+    new CfnOutput(this, 'UserPoolClientId', {
+      value: this.identity.userPoolClient.userPoolClientId,
+      description: 'Cognito User Pool Client ID',
     });
   }
 }

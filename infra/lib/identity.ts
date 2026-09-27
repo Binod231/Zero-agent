@@ -1,3 +1,9 @@
+import { Duration, RemovalPolicy } from 'aws-cdk-lib';
+import {
+  CfnUserPoolUser,
+  UserPool,
+  UserPoolClient,
+} from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
 
 export interface IdentityProps {
@@ -9,18 +15,47 @@ export interface IdentityProps {
 
 /**
  * Auth_Service: the Cognito user pool, its app client, and the one Author user.
- *
- * Declares no resources yet — task 12.1 defines the pool with `selfSignUpEnabled: false`, the
- * 12-hour token validities, the `USER_PASSWORD_AUTH` client with no secret, and the single
- * `CfnUserPoolUser` here.
  */
 export class Identity extends Construct {
   public readonly environment: string;
   public readonly authorUsername: string;
+  public readonly userPool: UserPool;
+  public readonly userPoolClient: UserPoolClient;
+  public readonly user: CfnUserPoolUser;
 
   constructor(scope: Construct, id: string, props: IdentityProps) {
     super(scope, id);
     this.environment = props.environment;
     this.authorUsername = props.authorUsername;
+
+    this.userPool = new UserPool(this, 'UserPool', {
+      userPoolName: `devlog-narrator-${props.environment}-users`,
+      selfSignUpEnabled: false,
+      signInAliases: {
+        username: true,
+        email: true,
+      },
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    this.userPoolClient = new UserPoolClient(this, 'UserPoolClient', {
+      userPool: this.userPool,
+      userPoolClientName: `devlog-narrator-${props.environment}-client`,
+      generateSecret: false,
+      authFlows: {
+        userPassword: true,
+      },
+      accessTokenValidity: Duration.hours(12),
+      refreshTokenValidity: Duration.hours(12),
+    });
+
+    this.user = new CfnUserPoolUser(this, 'AuthorUser', {
+      userPoolId: this.userPool.userPoolId,
+      username: props.authorUsername,
+      userAttributes: [
+        { name: 'email', value: `${props.authorUsername}@example.com` },
+        { name: 'email_verified', value: 'true' },
+      ],
+    });
   }
 }
