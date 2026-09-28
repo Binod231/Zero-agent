@@ -294,16 +294,17 @@ export async function renderEntry(entryId: string): Promise<HttpResponse> {
   }
 }
 
-export async function renderFeed(): Promise<HttpResponse> {
+export async function renderFeed(baseUrl: string = 'https://d1ulthnylvky08.cloudfront.net'): Promise<HttpResponse> {
   try {
     const res = await repository.queryTimeline({ limit: 20 });
     const items = res.ok ? res.value : [];
 
     const xml = `<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-stylesheet type="text/xsl" href="/feed.xsl"?>
 <rss version="2.0">
 <channel>
   <title>Devlog Narrator</title>
-  <link>https://builder.aws.com</link>
+  <link>${baseUrl}</link>
   <description>Single-Author build-in-public devlog powered by Amazon Bedrock on AWS</description>
   <language>en-us</language>
   ${items
@@ -311,8 +312,8 @@ export async function renderFeed(): Promise<HttpResponse> {
       (entry: EntrySummary) => `
   <item>
     <title>${escapeXml(entry.title)}</title>
-    <link>/entry/${escapeXml(entry.entryId)}</link>
-    <guid>/entry/${escapeXml(entry.entryId)}</guid>
+    <link>${baseUrl}/entry/${escapeXml(entry.entryId)}</link>
+    <guid isPermaLink="true">${baseUrl}/entry/${escapeXml(entry.entryId)}</guid>
     <pubDate>${new Date(entry.createdAt).toUTCString()}</pubDate>
   </item>`,
     )
@@ -331,6 +332,156 @@ export async function renderFeed(): Promise<HttpResponse> {
   } catch {
     return renderDegraded();
   }
+}
+
+export function renderFeedXsl(): HttpResponse {
+  const xsl = `<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="html" version="5.0" encoding="UTF-8" indent="yes"/>
+<xsl:template match="/">
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><xsl:value-of select="/rss/channel/title"/> — RSS Feed</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111827;
+      --border: #1f2937;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #6366f1;
+      --primary-hover: #818cf8;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f9fafb;
+        --card-bg: #ffffff;
+        --border: #e5e7eb;
+        --text: #111827;
+        --text-muted: #6b7280;
+        --primary: #4f46e5;
+        --primary-hover: #6366f1;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 48rem;
+      margin: 0 auto;
+    }
+    .banner {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .banner h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .banner p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+    }
+    .banner code {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--primary);
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.25rem;
+      font-size: 0.9em;
+      word-break: break-all;
+    }
+    .nav-link {
+      display: inline-block;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      margin-top: 0.5rem;
+    }
+    .nav-link:hover { text-decoration: underline; }
+    .entries-title {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .item-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .item-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .item-title {
+      font-size: 1.15rem;
+      margin-bottom: 0.4rem;
+    }
+    .item-title a {
+      color: var(--text);
+      text-decoration: none;
+    }
+    .item-title a:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+    .item-date {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="banner">
+      <h1>📡 <xsl:value-of select="/rss/channel/title"/> RSS Feed</h1>
+      <p><xsl:value-of select="/rss/channel/description"/></p>
+      <p>
+        This is an XML RSS syndication feed. Copy this URL (<code><xsl:value-of select="/rss/channel/link"/>/feed.xml</code>) into your RSS feed reader (such as Feedly, Inoreader, or NetNewsWire) to subscribe to automatic devlog updates.
+      </p>
+      <a class="nav-link" href="/">← Return to Public Timeline</a>
+    </div>
+
+    <h2 class="entries-title">Recent Devlog Entries</h2>
+    <xsl:for-each select="/rss/channel/item">
+      <div class="item-card">
+        <h3 class="item-title">
+          <a href="{link}"><xsl:value-of select="title"/></a>
+        </h3>
+        <div class="item-date">
+          Published: <xsl:value-of select="pubDate"/>
+        </div>
+      </div>
+    </xsl:for-each>
+  </div>
+</body>
+</html>
+</xsl:template>
+</xsl:stylesheet>`;
+
+  return {
+    statusCode: 200,
+    headers: {
+      'content-type': 'text/xsl; charset=utf-8',
+      'cache-control': 'public, max-age=3600',
+    },
+    body: xsl,
+  };
 }
 
 function escapeXml(text: string): string {
@@ -360,6 +511,7 @@ function renderDegraded(): HttpResponse {
 
 export interface SiteGatewayEvent {
   rawPath?: string;
+  headers?: Record<string, string | undefined>;
   requestContext?: {
     http?: {
       method?: string;
@@ -381,8 +533,17 @@ export async function handler(event: SiteGatewayEvent): Promise<HttpResponse> {
     };
   }
 
+  if (path === '/feed.xsl') {
+    return renderFeedXsl();
+  }
+
   if (path === '/feed.xml') {
-    return renderFeed();
+    const host =
+      event.headers?.['x-forwarded-host'] ??
+      event.headers?.['host'] ??
+      'd1ulthnylvky08.cloudfront.net';
+    const baseUrl = `https://${host}`;
+    return renderFeed(baseUrl);
   }
 
   if (path.startsWith('/entry/')) {
