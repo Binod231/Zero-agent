@@ -25,3 +25,7 @@ coverage/
 # editor and OS
 .DS_Store
 *.swp
+
+# local-only documentation
+ARTICLE.md
+docs/architecture.*
