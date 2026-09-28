@@ -538,10 +538,16 @@ export async function handler(event: SiteGatewayEvent): Promise<HttpResponse> {
   }
 
   if (path === '/feed.xml') {
-    const host =
+    let host =
       event.headers?.['x-forwarded-host'] ??
+      event.headers?.['cloudfront-forwarded-host'] ??
       event.headers?.['host'] ??
       'd1ulthnylvky08.cloudfront.net';
+
+    if (host.includes('execute-api')) {
+      host = 'd1ulthnylvky08.cloudfront.net';
+    }
+
     const baseUrl = `https://${host}`;
     return renderFeed(baseUrl);
   }
